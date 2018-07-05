@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"path/filepath"
 	"regexp"
+	"strconv"
 	"strings"
 
 	"github.com/pashau/lottery-generator"
@@ -50,7 +51,7 @@ func renderTemplate(w http.ResponseWriter, tmpl string, p *Page) {
 	}
 }
 
-var validPath = regexp.MustCompile("^/(edit|save|view)/([a-zA-Z0-9]+)$")
+var validPath = regexp.MustCompile("^/(edit|save|view|lotto)/([a-zA-Z0-9]+)$")
 
 func makeHandler(fn func(http.ResponseWriter, *http.Request, string)) http.HandlerFunc {
 	println("## makeHandler()")
@@ -142,14 +143,67 @@ func saveHandler(w http.ResponseWriter, r *http.Request, title string) {
 	http.Redirect(w, r, "/view/"+title, http.StatusFound)
 }
 
+func intToByte(intArray []int) []byte {
+	s := strings.Trim(strings.Join(strings.Fields(fmt.Sprint(intArray)), " "), "[]")
+	return []byte(s)
+}
+
+func splitIntToString(a []int, sep string) string {
+	if len(a) == 0 {
+		return ""
+	}
+
+	b := make([]string, len(a))
+	for i, v := range a {
+		b[i] = strconv.Itoa(v)
+	}
+	return strings.Join(b, sep)
+}
+
+func generateLottoData(fieldAmount int) {
+	println("## generateLottoData()")
+	//5aus50
+	var numberAmount, numberMax int = 5, 50
+	//2aus10
+	var numberAmount2, numberMax2 int = 2, 10
+
+	var lotto5v50 []int
+	var lotto2v10 []int
+	lottoListString := make([]string, fieldAmount)
+
+	for i := 0; i <= fieldAmount-1; i++ {
+		fmt.Printf("%v von %v Feldern: ", i+1, fieldAmount)
+		lotto5v50 = lotto.Uniquerandnumbers(numberAmount, numberMax)
+		lotto2v10 = lotto.Uniquerandnumbers(numberAmount2, numberMax2)
+		lottoListString[i] += splitIntToString(lotto5v50, ",") + " : " + splitIntToString(lotto2v10, ",") + "<br>"
+		println("lottoListString[" + string(i) + "]: " + lottoListString[i])
+	}
+	body := []byte(stringToByte(lottoListString))
+	p := &Page{Title: "lotto", Body: body}
+	p.save()
+}
+
+func lottoHandler(w http.ResponseWriter, r *http.Request, title string) {
+	fieldAmount, err := strconv.Atoi(title)
+	generateLottoData(fieldAmount)
+	println("## lottoHandler()")
+	title = "lotto"
+
+	p, err := loadPage(title)
+	if err != nil {
+		p = &Page{Title: title}
+	}
+	renderTemplate(w, title, p)
+}
+
 func main() {
 	//generateIndexData()
 	http.HandleFunc("/", makeHandler(indexHandler))
-	http.HandleFunc("/view/", makeHandler(viewHandler))
+	http.HandleFunc("/view/", makeHandler(viewHandler)) //e.g. http://172.18.0.1:8080/view/test
 	http.HandleFunc("/edit/", makeHandler(editHandler))
 	http.HandleFunc("/save/", makeHandler(saveHandler))
+	http.HandleFunc("/lotto/", makeHandler(lottoHandler)) //e.g. http://172.18.0.1:8080/lotto/5
 
 	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("static"))))
 	log.Fatal(http.ListenAndServe(":8080", nil))
-	fmt.Print(lotto.uniquerandnumbers(5, 50))
 }

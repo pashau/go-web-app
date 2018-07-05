@@ -1,1 +1,0 @@
-<input type="button" value="data/index.txt" onclick="location.href='/view/index';" /><br><input type="button" value="data/new.txt" onclick="location.href='/view/new';" /><br><input type="button" value="data/test.txt" onclick="location.href='/view/test';" /><br>
