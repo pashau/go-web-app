@@ -11,6 +11,51 @@
   <div>list data pages</div>
   <!-- div>{{printf "%s" .Body}}</div -->
   <div>{{.Body | safeHTML}}</div>
+  <br>
+  <div>
+    <table style="width:60%">
+      <tr>
+        <th>handler paths</th>
+        <th>comment</th>
+        <th>example</th>
+      </tr>
+      <tr>
+        <td>"/"</td>
+        <td>index page</td>
+        <td>
+          <a href="/">Jump to Index</a>
+        </td>
+      </tr>
+      <tr>
+        <td>"view"</td>
+        <td>view page</td>
+        <td>
+          <a href="/view/test">Jump to /view/test</a>
+        </td>
+      </tr>
+      <tr>
+        <td>"edit"</td>
+        <td>edit page</td>
+        <td>
+          <a href="/edit/test">Jump to /edit/test</a>
+        </td>
+      </tr>
+      <tr>
+        <td>"save"</td>
+        <td>save page</td>
+        <td>
+          <a href="/save/test">Jump to /save/test</a>
+        </td>
+      </tr>
+      <tr>
+        <td>"lotto"</td>
+        <td>lottery-generator page</td>
+        <td>
+          <a href="/lotto/6">Jump to /lotto/INT</a>
+        </td>
+      </tr>
+    </table>
+  </div>
 </body>
 
 </html>
