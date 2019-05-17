@@ -205,5 +205,5 @@ func main() {
 	http.HandleFunc("/lotto/", makeHandler(lottoHandler)) //e.g. http://172.18.0.1:8080/lotto/5
 
 	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("static"))))
-	log.Fatal(http.ListenAndServe(":8080", nil))
+	log.Fatal(http.ListenAndServe(":80", nil))
 }
